@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bank Performance Dashboard Rotator</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .powerbi-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #fff;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        // REPLACE THESE URLs WITH YOUR ACTUAL POWER BI REPORT URLs
+        const powerbiReports = [
+            'https://app.powerbi.com/reportEmbed?reportId=REPORT-1-HERE&autoAuth=true&filterPaneEnabled=false&navContentPaneEnabled=false',
+            'https://app.powerbi.com/reportEmbed?reportId=REPORT-2-HERE&autoAuth=true&filterPaneEnabled=false&navContentPaneEnabled=false',
+            'https://app.powerbi.com/reportEmbed?reportId=REPORT-3-HERE&autoAuth=true&filterPaneEnabled=false&navContentPaneEnabled=false'
+        ];
+        
+        // Display time for each report in seconds (300 = 5 minutes)
+        const reportDuration = 300;
+        let currentReportIndex = 0;
+        
+        function loadNextReport() {
+            const iframe = document.getElementById('powerbiFrame');
+            const loading = document.getElementById('loading');
+            
+            // Show loading message
+            loading.classList.remove('hidden');
+            loading.textContent = `Loading Report ${currentReportIndex + 1} of ${powerbiReports.length}...`;
+            
+            // Load the Power BI report
+            iframe.src = powerbiReports[currentReportIndex];
+            
+            // Hide loading when report is loaded
+            iframe.onload = function() {
+                loading.classList.add('hidden');
+            };
+            
+            // Move to next report (loop back to start)
+            currentReportIndex = (currentReportIndex + 1) % powerbiReports.length;
+            
+            // Schedule next rotation
+            setTimeout(loadNextReport, reportDuration * 1000);
+        }
+        
+        // Start the rotation when page loads
+        window.onload = loadNextReport;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            Initializing Kiosk Rotator...
+        </div>
+        <iframe id="powerbiFrame" class="powerbi-iframe"></iframe>
+    </div>
+</body>
+</html>
