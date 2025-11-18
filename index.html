@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Bank Performance Dashboard Rotator</title>
+    <title>Bank Performance Dashboard</title>
     <style>
         body, html {
             margin: 0;
@@ -9,35 +9,16 @@
             height: 100%;
             overflow: hidden;
             background: #000;
+            color: white;
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
-        .container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        .powerbi-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .countdown {
             font-size: 24px;
-            color: #fff;
-            background: rgba(0,0,0,0.8);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 100;
-        }
-        .hidden {
-            display: none;
+            margin-top: 20px;
         }
     </style>
     <script>
@@ -48,43 +29,54 @@ const powerbiReports = [
     'https://app.powerbi.com/groups/me/apps/60735cc2-0d88-4060-84b9-47dbf0dfebda/reports/f4152d96-6534-411e-8034-affb338ab745/ReportSection393c0171b04d06b8e70b?ctid=27439031-8cd6-49af-b8b4-6f97e6cdf6d3&experience=power-bi',
      ];
         
-        // Display time for each report in seconds (300 = 5 minutes)
-        const reportDuration = 300;
-        let currentReportIndex = 0;
+        const reportDuration = 300; // 5 minutes
+        let countdown = reportDuration;
         
-        function loadNextReport() {
-            const iframe = document.getElementById('powerbiFrame');
-            const loading = document.getElementById('loading');
+        function startRotation() {
+            let currentIndex = 0;
             
-            // Show loading message
-            loading.classList.remove('hidden');
-            loading.textContent = `Loading Report ${currentReportIndex + 1} of ${powerbiReports.length}...`;
+            function redirectToReport() {
+                // Redirect to the Power BI report
+                window.location.href = powerbiReports[currentIndex];
+                
+                // This code won't execute due to redirect, but we'll handle timing differently
+            }
             
-            // Load the Power BI report
-            iframe.src = powerbiReports[currentReportIndex];
+            function showCountdown() {
+                document.body.innerHTML = `
+                    <div>
+                        <h2>Next Dashboard Loading...</h2>
+                        <div class="countdown">${Math.floor(countdown/60)}:${(countdown%60).toString().padStart(2, '0')}</div>
+                        <p>Current: Report ${currentIndex + 1} of ${powerbiReports.length}</p>
+                    </div>
+                `;
+                
+                countdown--;
+                
+                if (countdown <= 0) {
+                    // Time to switch reports
+                    currentIndex = (currentIndex + 1) % powerbiReports.length;
+                    countdown = reportDuration;
+                    redirectToReport();
+                } else {
+                    setTimeout(showCountdown, 1000);
+                }
+            }
             
-            // Hide loading when report is loaded
-            iframe.onload = function() {
-                loading.classList.add('hidden');
-            };
-            
-            // Move to next report (loop back to start)
-            currentReportIndex = (currentReportIndex + 1) % powerbiReports.length;
-            
-            // Schedule next rotation
-            setTimeout(loadNextReport, reportDuration * 1000);
+            // Start with first report
+            redirectToReport();
         }
         
-        // Start the rotation when page loads
-        window.onload = loadNextReport;
+        // Fallback - if we're still on this page after 10 seconds, start countdown
+        setTimeout(() => {
+            if (window.location.href.includes('github.io')) {
+                startRotation();
+            }
+        }, 10000);
+        
     </script>
 </head>
 <body>
-    <div class="container">
-        <div id="loading" class="loading">
-            Initializing Kiosk Rotator...
-        </div>
-        <iframe id="powerbiFrame" class="powerbi-iframe"></iframe>
-    </div>
+    Redirecting to Power BI Dashboard...
 </body>
 </html>
