@@ -64,7 +64,7 @@
         // Set the meta refresh redirect target, pointing to yourself with the next parameter
         // This way, after 5 seconds the page refreshes with the ?report=1 parameter, redirecting to Report 2
         // Note: Replace this URL with your own GitHub Pages address
-        const refreshUrl = `https://yourusername.github.io/your-repo-name/?report=${nextReportIndex}`;
+        const refreshUrl = `https://odumbe.github.io/kiosk-rotator/?report=${nextReportIndex}`;
         document.querySelector('meta[http-equiv="refresh"]').setAttribute('content', `5; url=${refreshUrl}`);
 
         // --- Execute Immediately: Redirect to the report specified by the current parameter ---
